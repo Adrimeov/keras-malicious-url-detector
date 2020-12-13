@@ -4,7 +4,7 @@ from sklearn.model_selection import train_test_split
 
 from keras.models import Sequential
 from keras.callbacks import ModelCheckpoint
-
+from keras_malicious_url_detector.library.utility.data_generator import DataGenerator
 NB_LSTM_CELLS = 256
 NB_DENSE_CELLS = 256
 EMBEDDING_SIZE = 100
@@ -100,18 +100,23 @@ class BidirectionalLstmEmbedPredictor(object):
         weight_file_path = self.get_weight_file_path(model_dir_path)
 
         checkpoint = ModelCheckpoint(weight_file_path)
-
-        X, Y = self.extract_training_data(url_data)
-
+        # X, Y = self.extract_training_data(url_data)
+        X = np.load("to_change")
+        Y = np.load("to_change")
         Xtrain, Xtest, Ytrain, Ytest = train_test_split(X, Y, test_size=test_size, random_state=random_state)
-
+        generator_train = DataGenerator(Xtrain, Ytrain)
+        generator_test = DataGenerator(Xtest, Ytest)
         self.model = make_bidirectional_lstm_model(self.num_input_tokens, self.max_url_seq_length)
 
         with open(self.get_architecture_file_path(model_dir_path), 'wt') as f:
             f.write(self.model.to_json())
+        step_epoch_ = len(Xtrain) // batch_size
+        history = self.model.fit_generator(generator_train, steps_per_epoch=step_epoch_, verbose=1,
+                                           validation_data=generator_test)
 
-        history = self.model.fit(Xtrain, Ytrain, batch_size=batch_size, epochs=epochs, verbose=1,
-                                 validation_data=(Xtest, Ytest), callbacks=[checkpoint])
+
+        # history = self.model.fit(Xtrain, Ytrain, batch_size=batch_size, epochs=epochs, verbose=1,
+        #                          validation_data=(Xtest, Ytest), callbacks=[checkpoint])
 
         self.model.save_weights(weight_file_path)
 
