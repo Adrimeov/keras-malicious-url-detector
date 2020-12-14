@@ -3,7 +3,7 @@ import os
 
 
 def load_url_data(data_dir_path):
-    url_data = pd.read_csv(data_dir_path + os.path.sep + 'URL.txt', sep=',')
+    url_data = pd.read_csv(data_dir_path, sep=',')
 
     url_data.columns = ['text', 'label']
 

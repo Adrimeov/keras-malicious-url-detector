@@ -19,6 +19,7 @@ def plot_history_2win(history):
 
 
 def create_history_plot(history, model_name):
+    pass
     plt.title('Accuracy and Loss (' + model_name + ')')
     plt.plot(history.history['acc'], color='g', label='Train Accuracy')
     plt.plot(history.history['val_acc'], color='b', label='Validation Accuracy')

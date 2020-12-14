@@ -101,18 +101,22 @@ class BidirectionalLstmEmbedPredictor(object):
 
         checkpoint = ModelCheckpoint(weight_file_path)
         # X, Y = self.extract_training_data(url_data)
-        X = np.load("to_change")
-        Y = np.load("to_change")
+        X = np.load("/home/samuel/Desktop/keras-malicious-url-detector/data/train_augmented_encoded.npy")
+        Y = np.load("/home/samuel/Desktop/keras-malicious-url-detector/data/train_augmented_encoded_labels.npy")
+
+        X = X[0:1000]
+        Y = Y[0:1000]
+
         Xtrain, Xtest, Ytrain, Ytest = train_test_split(X, Y, test_size=test_size, random_state=random_state)
         generator_train = DataGenerator(Xtrain, Ytrain)
         generator_test = DataGenerator(Xtest, Ytest)
-        self.model = make_bidirectional_lstm_model(self.num_input_tokens, self.max_url_seq_length)
+        self.model = make_bidirectional_lstm_model(self.num_input_tokens, X.shape[1])
 
         with open(self.get_architecture_file_path(model_dir_path), 'wt') as f:
             f.write(self.model.to_json())
         step_epoch_ = len(Xtrain) // batch_size
         history = self.model.fit_generator(generator_train, steps_per_epoch=step_epoch_, verbose=1,
-                                           validation_data=generator_test)
+                                           validation_data=generator_test, epochs=epochs)
 
 
         # history = self.model.fit(Xtrain, Ytrain, batch_size=batch_size, epochs=epochs, verbose=1,

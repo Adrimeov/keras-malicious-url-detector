@@ -2,6 +2,7 @@
 
 def extract_text_model(urls):
     char2idx = dict()
+    char2idx[''] = 0
     max_url_seq_length = 0
     for url in urls:
         max_url_seq_length = max(max_url_seq_length, len(url))
